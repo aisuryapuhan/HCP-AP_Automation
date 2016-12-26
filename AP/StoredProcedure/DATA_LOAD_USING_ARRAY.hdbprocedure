@@ -1,0 +1,68 @@
+PROCEDURE "AP"."AP_Automation.AP.StoredProcedure::DATA_LOAD_USING_ARRAY" (IN IN_SOURCE_SCHEMA VARCHAR(10) ,
+     IN IN_SOURCE_TABLE VARCHAR(100) ,
+     IN IN_TARGET_SCHEMA VARCHAR(10) ,
+     IN IN_TARGET_TABLE VARCHAR(100),
+     IN IN_DELTA_TYPE VARCHAR(10))
+LANGUAGE SQLSCRIPT SQL SECURITY INVOKER AS   i INT;
+BEGIN
+   DECLARE STRINGARRAY  VARCHAR(20) ARRAY;
+   --DECLARE pk_tab string := '' ;
+   DECLARE TEXT VARCHAR(100000);
+   DECLARE rowcount integer;
+   DECLARE primary_keys VARCHAR(5000) := '' ;
+   DECLARE column_list VARCHAR(30000) := '' ;
+   DECLARE DELETE_QUERY VARCHAR(30000) := '' ;
+   DECLARE UPSERT_QUERY VARCHAR(30000) := '' ;
+   DECLARE INSERT_QUERY VARCHAR(30000) := '' ;
+   
+   
+    /* GETTING PRIMARY KEY COLUMNS OF THE TARGET TABLE*/
+pk_tab = SELECT column_name FROM CONSTRAINTS
+WHERE table_name = UPPER(:IN_TARGET_TABLE)
+AND schema_name = UPPER(:IN_TARGET_SCHEMA) AND is_primary_key = 'TRUE' ;
+  -- STRINGARRAY := ARRAY_AGG('BPNO');
+   SELECT count(*) into rowcount from :pk_tab; -- To know the count of columns
+   --TEXT := :STRINGARRAY[1];
+   --TEXT := 'BPNO';
+   -- To form the primary key list
+   FOR i IN 1 ..:rowcount-1
+   DO
+   TEXT := :TEXT || ',' || :STRINGARRAY[:i+1];
+   END FOR;
+   primary_keys := :TEXT;
+  -- To handle the column names with "Spaces" in between
+   SELECT '"' ||  REPLACE (:primary_keys,',','","') || '"' INTO primary_keys FROM DUMMY;
+   /* GETTING COLUMNS OF THE TARGET TABLE*/
+    col_tab = SELECT column_name FROM TABLE_COLUMNS
+  WHERE table_name = UPPER(:IN_TARGET_TABLE)
+  AND schema_name = UPPER(:IN_TARGET_SCHEMA) ;
+   STRINGARRAY := ARRAY_AGG(:col_tab.column_name);
+   SELECT count(*) into rowcount from :col_tab;
+   TEXT := :STRINGARRAY[1];
+    -- To form the column-list
+   FOR i IN 1 ..:rowcount-1
+   DO
+   TEXT := :TEXT || ',' || :STRINGARRAY[:i+1];
+   END FOR;
+   column_list := :TEXT;
+ -- To handle the column names with "Spaces" in between
+   SELECT '"' ||  REPLACE (:column_list,',','","') || '"' INTO column_list FROM DUMMY;
+   IF IN_DELTA_TYPE = 'FULL'
+   THEN
+   --To delete the data from the target table
+   DELETE_QUERY :=
+  'DELETE FROM "'||IN_TARGET_SCHEMA||'"."'||IN_TARGET_TABLE||'"' ;
+   -- To insert the new load into target table
+   INSERT_QUERY :=
+  'INSERT INTO "'||IN_TARGET_SCHEMA||'"."'||IN_TARGET_TABLE||'" ('||:column_list||')
+   SELECT '||:column_list||' FROM "'||IN_SOURCE_SCHEMA||'"."'||IN_SOURCE_TABLE||'"';
+   EXEC (:DELETE_QUERY);
+   EXEC (:INSERT_QUERY);
+   ELSEIF IN_DELTA_TYPE = 'DELTA'
+   THEN
+   UPSERT_QUERY :=
+  'UPSERT '||IN_TARGET_SCHEMA||'.'||IN_TARGET_TABLE||' SELECT '||:column_list||'
+  FROM '||IN_SOURCE_SCHEMA||'.'||IN_SOURCE_TABLE||'';
+   EXEC (:UPSERT_QUERY);
+   END IF;
+END;

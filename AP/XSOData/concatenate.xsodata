@@ -1,0 +1,5 @@
+service {  
+  "AP"."workshop.aisurya.AP2::ZTESTSTRUCT" as "TestService"
+  create using "AP_Automation.AP.StoredProcedure::concatenate"
+  events( before "AP_Automation.AP:createTest.xsjslib::create_test");  
+  }

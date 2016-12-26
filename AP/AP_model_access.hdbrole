@@ -1,0 +1,4 @@
+role AP_Automation.AP::AP_model_access 
+{
+	application privilege: AP_Automation.AP::Basic;
+}

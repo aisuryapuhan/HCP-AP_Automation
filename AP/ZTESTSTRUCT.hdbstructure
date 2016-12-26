@@ -1,0 +1,9 @@
+table.schemaName = "AP";  
+table.tableType = COLUMNSTORE;  
+table.columns =  
+[  
+  {name = "TESTID"; sqlType = INTEGER; nullable = false; comment = "test id"; },  
+    {name = "TESTNAME"; sqlType = NVARCHAR; length = 30; comment = "test name"; },  
+    {name = "TESTDESCRIPTION"; sqlType = NVARCHAR; length = 256; comment = "test description"; }  
+];  
+table.primaryKey.pkcolumns = ["TESTID"];

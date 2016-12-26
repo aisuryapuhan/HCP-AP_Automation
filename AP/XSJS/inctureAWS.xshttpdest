@@ -1,0 +1,9 @@
+host = "52.35.129.167";
+port = 8080;
+pathPrefix = "/sap/opu/odata/sap/ZCATTIMESHEET_SRV/";
+useProxy = true;
+proxyHost = "proxy";
+proxyPort = 8080;
+authType = none;
+useSSL = false;
+timeout = 30000;

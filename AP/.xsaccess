@@ -1,0 +1,9 @@
+{
+     "exposed" : true,
+      "authentication" :                                            
+            {
+               "method": "Form"   
+            },
+     "force_ssl" : false,
+     "prevent_xsrf" : false
+}

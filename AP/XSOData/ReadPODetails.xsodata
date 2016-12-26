@@ -1,0 +1,27 @@
+service namespace "AP_Automation.AP.XSOData"
+{
+"AP"."AP_PO" as "POHeader" 
+	navigates 
+		(
+			"ToPOAssctn" as "POItemDetails",//PO Line Item Navigation
+			"ToPOGRNAssctn" as "POGRNItemDetails",//PO Grn Items Navigation
+			"ToGRNTotalAssctn" as "POGRNTotalDetails"
+		
+		);
+
+//PO Item
+"AP"."AP_PO_ITEM" as "POLineItems";
+association "ToPOAssctn" principal "POHeader"("ID")
+multiplicity "1" dependent "POLineItems"("PO_HEADER_ID") multiplicity "*";
+
+//GRN Item
+"AP"."AP_GRN_LINE_ITEMS" as "PoGRNLineItems";
+association "ToPOGRNAssctn" principal "POHeader"("ID")
+multiplicity "1" dependent "PoGRNLineItems"("GRN_HEADER_ID") multiplicity "*";
+
+//GRN Item Totals
+"AP"."AP_GRN_ITEM_TOTALS" as "POGRNTotalLineItems";
+association "ToGRNTotalAssctn" principal "POHeader"("ID")
+multiplicity "1" dependent "POGRNTotalLineItems"("HEADER_ID") multiplicity "*";
+
+}

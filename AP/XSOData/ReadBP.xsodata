@@ -1,0 +1,7 @@
+service
+{
+"AP"."BUSINESSPARTNER" as "BusinessPartner"
+create forbidden
+update forbidden
+delete forbidden;
+}

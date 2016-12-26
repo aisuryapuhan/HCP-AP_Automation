@@ -1,0 +1,6 @@
+service {  
+  "AP"."NAME" as "InsertService"
+  //create using "workshop.aisurya.AP2::ZTESTPROC"   
+  create using "AP_Automation.AP:createTest.xsjslib::insertvalues"
+  events( before "AP_Automation.AP:createTest.xsjslib::create_test");
+  }

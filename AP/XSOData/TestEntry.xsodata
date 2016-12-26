@@ -1,0 +1,18 @@
+service {  
+  "AP"."workshop.aisurya.AP2::ZTESTSTRUCT" as "TestService"
+  create using "workshop.aisurya.AP2::ZTESTPROC"   
+  events( before "AP_Automation.AP:createTest.xsjslib::create_test");  
+  
+  
+  "AP"."BUSINESSPARTNER" as "BusinessPartner"
+create forbidden
+update forbidden
+delete forbidden;
+  
+  
+}
+
+
+
+
+

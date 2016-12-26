@@ -1,0 +1,11 @@
+service namespace "AP_Automation.AP.XSOData"
+{
+"AP"."AP_INVOICE_DETAIL" as "InvoiceHeader"
+navigates ("ToInvoiceAssctn" as "ItemDetails");
+
+"AP"."AP_INVOICE_LINE_ITEMS" as "InvoiceLineItems";
+
+association "ToInvoiceAssctn" principal "InvoiceHeader"("REQUEST_ID")
+multiplicity "1" dependent "InvoiceLineItems"("REQUEST_ID") multiplicity "*";
+}
+

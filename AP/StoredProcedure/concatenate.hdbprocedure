@@ -1,0 +1,45 @@
+PROCEDURE "AP"."AP_Automation.AP.StoredProcedure::concatenate" (
+IN ROW "AP"."workshop.aisurya.AP2::ZTEST",
+OUT error "AP"."workshop.aisurya.AP2::ZTT_ERROR"
+ ) 
+	LANGUAGE SQLSCRIPT
+	SQL SECURITY INVOKER 
+	DEFAULT SCHEMA AP
+	--READS SQL DATA 
+	AS
+BEGIN
+/***************************** 
+	Write your procedure logic 
+ *****************************/
+ /***************************** 
+	Write your procedure logic 
+ *****************************/
+ DECLARE invalid_input CONDITION FOR SQL_ERROR_CODE 19000;  
+ declare ERROR_MSG string;  
+  declare TESTID integer;  
+ declare TESTNAME string;  
+ declare TESTDESCRIPTION string;  
+  declare TESTNAMESTR string;
+  
+ SELECT "TESTID", "TESTNAME", "TESTDESCRIPTION"  
+ INTO TESTID, TESTNAME, TESTDESCRIPTION  
+ FROM :ROW;  
+ TESTNAMESTR := :TESTID || 'ABC';
+IF (:TESTNAME IS NULL OR :TESTNAME = '')  
+ THEN  
+  error = select 400 as http_status_code, ERROR_MSG as error_message,   
+  'Testname empty' as detail from dummy;
+    
+ SIGNAL invalid_input SET MESSAGE_TEXT = 'Testname empty';  
+ END IF;  
+ INSERT INTO "AP"."workshop.aisurya.AP2::ZTEST"
+ VALUES(:TESTID,  
+  'ABC',  
+  :TESTNAMESTR); 
+END;
+ 
+ 
+ 
+ 
+ 
+
